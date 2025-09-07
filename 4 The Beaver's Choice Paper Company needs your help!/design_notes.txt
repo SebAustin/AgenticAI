@@ -1,0 +1,185 @@
+MUNDER DIFFLIN MULTI-AGENT SYSTEM DESIGN NOTES
+================================================
+
+SYSTEM OVERVIEW
+---------------
+This multi-agent system automates the core business operations of Munder Difflin Paper Company,
+including inventory management, quote generation, and order fulfillment. The system uses 4 agents
+working together to process customer requests efficiently and accurately.
+
+AGENT ARCHITECTURE
+------------------
+1. BUSINESS ORCHESTRATOR (Main Agent)
+   - Coordinates all other agents
+   - Parses customer requests using regex patterns
+   - Manages the workflow sequence
+   - Compiles final responses
+
+2. INVENTORY MANAGER
+   - Monitors stock levels and cash balance
+   - Provides real-time availability information
+   - Alerts on low stock situations
+
+3. QUOTE SPECIALIST
+   - Calculates pricing with bulk discounts
+   - Searches historical quote data
+   - Applies tiered discount structure (5%, 10%, 15%)
+
+4. ORDER PROCESSOR
+   - Handles order fulfillment
+   - Updates inventory levels
+   - Manages supplier restocking alerts
+
+WORKFLOW PROCESS
+----------------
+1. REQUEST RECEPTION
+   - Customer request comes in with items and quantities
+   - System extracts items using regex: (\d+)\s+(?:sheets?|reams?|rolls?|packs?|units?)\s+of\s+([^,\n]+)
+   - Maps common item names to exact inventory names
+
+2. INVENTORY VERIFICATION
+   - Checks current stock for each requested item
+   - Verifies sufficient cash balance
+   - Identifies any unavailable items
+
+3. QUOTE GENERATION
+   - Calculates base cost for each item
+   - Applies appropriate bulk discount tier
+   - Searches historical data for similar requests
+
+4. ORDER PROCESSING
+   - Validates stock availability
+   - Creates sales transactions
+   - Updates inventory levels
+   - Plans restocking if needed
+
+5. RESPONSE COMPILATION
+   - Combines all agent outputs
+   - Provides comprehensive customer response
+   - Includes inventory status, pricing, and next steps
+
+KEY TECHNICAL FEATURES
+----------------------
+1. SMART ITEM MAPPING
+   - Handles 50+ common item name variations
+   - Maps to exact inventory names for accuracy
+   - Supports paper types, products, and specialty items
+
+2. BULK DISCOUNT SYSTEM
+   - 5% discount for orders over $0
+   - 10% discount for orders over $100
+   - 15% discount for orders over $500
+
+3. REAL-TIME INVENTORY TRACKING
+   - SQLite database with SQLAlchemy ORM
+   - Transaction-based stock level calculation
+   - Date-aware inventory snapshots
+
+4. ERROR HANDLING
+   - Graceful handling of missing items
+   - Insufficient stock alerts
+   - Cash balance validation
+
+5. HISTORICAL LEARNING
+   - Searches past quotes for pricing guidance
+   - Uses metadata for job type and event context
+   - Improves quote accuracy over time
+
+DATA FLOW ARCHITECTURE
+----------------------
+1. INPUT LAYER
+   - CSV files for historical data
+   - Customer request text parsing
+   - Date handling with ISO format
+
+2. PROCESSING LAYER
+   - Agent coordination via smolagents framework
+   - Tool-based function calls
+   - State management across requests
+
+3. STORAGE LAYER
+   - SQLite database for transactions
+   - Inventory and quote history tables
+   - Real-time data updates
+
+4. OUTPUT LAYER
+   - Formatted customer responses
+   - CSV export of test results
+   - Financial reporting
+
+INTEGRATION POINTS
+------------------
+1. DATABASE INTEGRATION
+   - Uses existing database functions
+   - Maintains transaction integrity
+   - Supports concurrent operations
+
+2. EXTERNAL API
+   - OpenAI-compatible endpoint
+   - Custom base URL for Udacity platform
+   - Environment variable configuration
+
+3. FILE SYSTEM
+   - CSV data import/export
+   - Test result logging
+   - Configuration management
+
+PERFORMANCE CONSIDERATIONS
+--------------------------
+1. EFFICIENCY
+   - Minimal database queries per request
+   - Cached inventory lookups
+   - Optimized regex patterns
+
+2. SCALABILITY
+   - Modular agent architecture
+   - Tool-based function design
+   - Stateless processing
+
+3. RELIABILITY
+   - Comprehensive error handling
+   - Transaction rollback support
+   - Data validation at each step
+
+TESTING AND VALIDATION
+----------------------
+1. TEST SCENARIOS
+   - 20+ sample customer requests
+   - Various job types and event sizes
+   - Edge cases and error conditions
+
+2. VALIDATION METRICS
+   - Cash balance accuracy
+   - Inventory level consistency
+   - Quote calculation correctness
+
+3. OUTPUT VERIFICATION
+   - CSV export validation
+   - Financial report accuracy
+   - Transaction log completeness
+
+FUTURE ENHANCEMENTS
+-------------------
+1. MACHINE LEARNING
+   - Predictive inventory management
+   - Dynamic pricing optimization
+   - Customer behavior analysis
+
+2. INTEGRATION EXPANSION
+   - ERP system connectivity
+   - Supplier API integration
+   - Customer portal interface
+
+3. AUTOMATION IMPROVEMENTS
+   - Automated restocking triggers
+   - Real-time supplier communication
+   - Advanced reporting dashboards
+
+IMPLEMENTATION NOTES
+--------------------
+- Built using Python 3.8+ compatibility
+- Uses smolagents framework for agent orchestration
+- SQLite database for data persistence
+- Comprehensive logging and error handling
+- Modular design for easy maintenance and extension
+- Follows Python best practices and PEP 8 standards
